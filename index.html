@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لعبة عثمان - كلمات الأوامر وأدوات الاستفهام</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Rubik:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#6a5cff; --bg2:#ff6ba6; --bg3:#ffd36b;
+    --card:#ffffff; --ink:#2b2350; --ink2:#6b6490;
+    --green:#2bd576; --green-d:#16a95a;
+    --red:#ff5a7a; --red-d:#d43a5a;
+    --blue:#4e8cff; --purple:#8a5cff; --orange:#ff9a3c;
+    --shadow:0 10px 30px rgba(43,35,80,.22);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0; min-height:100vh;
+    font-family:'Cairo',system-ui,sans-serif;
+    color:var(--ink);
+    background:linear-gradient(135deg,var(--bg1),var(--bg2) 55%,var(--bg3));
+    background-attachment:fixed;
+    padding:14px; overflow-x:hidden;
+  }
+  .heb{font-family:'Rubik','Cairo',sans-serif;}
+  header{text-align:center; color:#fff; margin:6px 0 14px;}
+  header h1{margin:0; font-size:1.7rem; font-weight:900; text-shadow:0 3px 10px rgba(0,0,0,.25);}
+  header p{margin:4px 0 0; font-size:1rem; opacity:.95;}
+  .stars{display:inline-flex; gap:6px; align-items:center; background:rgba(255,255,255,.22);
+    padding:6px 14px; border-radius:999px; margin-top:10px; font-weight:700; font-size:1.05rem;}
+  /* menu */
+  .menu{display:grid; grid-template-columns:1fr 1fr; gap:12px; max-width:560px; margin:0 auto;}
+  .menu button{
+    border:none; border-radius:22px; padding:22px 12px; cursor:pointer;
+    color:#fff; font-family:inherit; font-weight:800; font-size:1.15rem;
+    box-shadow:var(--shadow); transition:transform .12s;
+  }
+  .menu button:active{transform:scale(.95);}
+  .m-emoji{display:block; font-size:2.4rem; margin-bottom:6px;}
+  .b1{background:linear-gradient(135deg,#5cc8ff,#4e8cff);}
+  .b2{background:linear-gradient(135deg,#ff8fb4,#ff5a7a);}
+  .b3{background:linear-gradient(135deg,#8be28b,#2bd576);}
+  .b4{background:linear-gradient(135deg,#c89bff,#8a5cff);}
+  /* category chips */
+  .cats{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:16px auto 0; max-width:560px;}
+  .cats .chip{border:none; background:rgba(255,255,255,.25); color:#fff; font-family:inherit;
+    font-weight:700; padding:8px 16px; border-radius:999px; cursor:pointer; font-size:.95rem;}
+  .cats .chip.on{background:#fff; color:var(--ink);}
+  /* screen */
+  .screen{display:none; max-width:560px; margin:0 auto;}
+  .screen.on{display:block; animation:pop .25s;}
+  @keyframes pop{from{opacity:0; transform:translateY(10px);}to{opacity:1;}}
+  .topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+  .btn-back{background:rgba(255,255,255,.9); border:none; border-radius:14px; padding:8px 16px;
+    font-family:inherit; font-weight:800; font-size:1rem; cursor:pointer; color:var(--ink);}
+  .counter{color:#fff; font-weight:800; font-size:1rem; background:rgba(255,255,255,.2);
+    padding:6px 14px; border-radius:999px;}
+  .panel{background:var(--card); border-radius:26px; padding:20px; box-shadow:var(--shadow);}
+  /* flashcard */
+  .flip{perspective:1200px; height:260px; cursor:pointer; margin-bottom:14px;}
+  .flip-inner{position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d;}
+  .flip.flipped .flip-inner{transform:rotateY(180deg);}
+  .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:22px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; text-align:center;}
+  .front{background:linear-gradient(135deg,#eef2ff,#dfe7ff);}
+  .back{background:linear-gradient(135deg,#fff0f5,#ffe0ec); transform:rotateY(180deg);}
+  .big-he{font-size:3rem; font-weight:900; color:var(--ink);}
+  .big-ar{font-size:3rem; font-weight:900; color:var(--red-d);}
+  .face small{color:var(--ink2); font-weight:700; margin-top:10px; font-size:1rem;}
+  .tiny{font-size:1.4rem; margin-top:12px; opacity:.85;}
+  .row{display:flex; gap:10px; margin-top:4px;}
+  .row button{flex:1; border:none; border-radius:16px; padding:14px; font-family:inherit;
+    font-weight:800; font-size:1.05rem; color:#fff; cursor:pointer; box-shadow:var(--shadow); transition:transform .1s;}
+  .row button:active{transform:scale(.95);}
+  .hear-he{background:linear-gradient(135deg,#5cc8ff,#4e8cff);}
+  .hear-ar{background:linear-gradient(135deg,#ff8fb4,#ff5a7a);}
+  .wide-btn{display:block; width:100%; margin-bottom:14px; border:none; border-radius:16px; padding:14px;
+    font-family:inherit; font-weight:800; font-size:1.05rem; color:#fff; cursor:pointer; box-shadow:var(--shadow); transition:transform .1s;}
+  .wide-btn:active{transform:scale(.97);}
+  .nav{display:flex; gap:10px; margin-top:12px;}
+  .nav button{flex:1; border:none; border-radius:16px; padding:14px; font-family:inherit;
+    font-weight:800; font-size:1.05rem; cursor:pointer; background:#eceaff; color:var(--ink);}
+  .say-hint{text-align:center; color:var(--purple); font-weight:800; margin-top:10px; font-size:1.05rem;}
+  /* speak game */
+  .speak-word{text-align:center; margin:6px 0 16px;}
+  .speak-word .w{font-size:3rem; font-weight:900; color:var(--ink);}
+  .speak-word .m{font-size:1.3rem; font-weight:700; color:var(--ink2); margin-top:6px;}
+  .mic{width:120px; height:120px; border-radius:50%; border:none; margin:0 auto; display:block;
+    background:linear-gradient(135deg,#8a5cff,#5c6bff); color:#fff; font-size:3rem; cursor:pointer;
+    box-shadow:var(--shadow); transition:transform .15s;}
+  .mic:active{transform:scale(.92);}
+  .mic.listening{animation:pulse 1s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(138,92,255,.6);}70%{box-shadow:0 0 0 24px rgba(138,92,255,0);}100%{box-shadow:0 0 0 0 rgba(138,92,255,0);}}
+  .feedback{text-align:center; font-weight:800; font-size:1.3rem; min-height:34px; margin-top:14px;}
+  .ok{color:var(--green-d);} .no{color:var(--red-d);}
+  .manual{display:block; margin:12px auto 0; background:var(--green); color:#fff; border:none;
+    border-radius:16px; padding:12px 22px; font-family:inherit; font-weight:800; font-size:1.05rem; cursor:pointer;}
+  /* match game */
+  .match-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .match-col{display:flex; flex-direction:column; gap:10px;}
+  .tile{border:none; border-radius:16px; padding:16px 8px; font-family:inherit; font-weight:800;
+    font-size:1.35rem; cursor:pointer; color:var(--ink); background:#eef1ff; transition:transform .1s;}
+  .tile.he{background:#e3ecff;} .tile.ar{background:#ffe6ef;}
+  .tile.sel{outline:4px solid var(--purple); transform:scale(1.03);}
+  .tile.done{background:var(--green); color:#fff; pointer-events:none; opacity:.55;}
+  .tile.wrong{animation:shake .4s;}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}
+  /* quiz */
+  .q-word{text-align:center; font-size:2.6rem; font-weight:900; margin:4px 0 6px; color:var(--ink);}
+  .q-ask{text-align:center; color:var(--ink2); font-weight:700; margin-bottom:16px;}
+  .opts{display:grid; gap:10px;}
+  .opt{border:none; border-radius:16px; padding:16px; font-family:inherit; font-weight:800;
+    font-size:1.4rem; cursor:pointer; background:#eef1ff; color:var(--ink); transition:transform .1s;}
+  .opt:active{transform:scale(.97);}
+  .opt.right{background:var(--green); color:#fff;}
+  .opt.wrong{background:var(--red); color:#fff;}
+  /* win */
+  .win{text-align:center;}
+  .win .emo{font-size:4rem;}
+  .win h2{margin:8px 0; font-size:1.6rem;}
+  .win button{background:linear-gradient(135deg,#8a5cff,#5c6bff); color:#fff; border:none;
+    border-radius:16px; padding:14px 26px; font-family:inherit; font-weight:800; font-size:1.1rem; cursor:pointer; margin-top:8px;}
+  .note{background:rgba(255,255,255,.2); color:#fff; border-radius:14px; padding:10px 14px;
+    text-align:center; font-weight:700; margin-top:14px; font-size:.9rem; max-width:560px; margin-inline:auto;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎮 لعبة عثمان 🎮</h1>
+  <p>احفظ كلمات الأوامر وأدوات الاستفهام — واقرأها بصوتٍ عالٍ!</p>
+  <div class="stars">⭐ <span id="score">0</span> نقطة</div>
+</header>
+
+<!-- MAIN MENU -->
+<div id="home">
+  <div class="cats">
+    <button class="chip on" data-cat="all">📚 الكل</button>
+    <button class="chip" data-cat="cmd">✋ الأوامر</button>
+    <button class="chip" data-cat="q">❓ أدوات الاستفهام</button>
+  </div>
+  <div class="menu" style="margin-top:16px;">
+    <button class="b1" onclick="startFlash()"><span class="m-emoji">🔤</span>بطاقات<br>اسمع وكرّر</button>
+    <button class="b2" onclick="startSpeak()"><span class="m-emoji">🎤</span>قُلها بصوتك<br>تكلّم!</button>
+    <button class="b3" onclick="startMatch()"><span class="m-emoji">🧩</span>طابِق<br>عبري ↔ عربي</button>
+    <button class="b4" onclick="startQuiz()"><span class="m-emoji">🏆</span>اختبار<br>اختر الصحيح</button>
+  </div>
+  <div class="note">💡 نصيحة: اضغط 🔊 لسماع الكلمة، ثم ردِّدها بصوت عالٍ ٣ مرّات حتى تحفظها!</div>
+</div>
+
+<!-- FLASHCARDS -->
+<div class="screen" id="s-flash">
+  <div class="topbar"><button class="btn-back" onclick="goHome()">→ رجوع</button><span class="counter" id="flash-count"></span></div>
+  <div class="panel">
+    <div class="flip" id="flip" onclick="flipCard()">
+      <div class="flip-inner">
+        <div class="face front"><div class="big-he heb" id="fc-he"></div><small>بالعبرية — اضغط لرؤية المعنى</small><div class="tiny">👆 اقلب البطاقة</div></div>
+        <div class="face back"><div class="big-ar" id="fc-ar"></div><small>المعنى بالعربية</small></div>
+      </div>
+    </div>
+    <div class="row">
+      <button class="hear-he" onclick="event.stopPropagation();speakHe(cur().heSpeak)">🔊 بالعبري</button>
+      <button class="hear-ar" onclick="event.stopPropagation();speakAr(cur().arSpeak)">🔊 بالعربي</button>
+    </div>
+    <div class="say-hint">🗣️ الآن قُلها بصوتٍ عالٍ!</div>
+    <div class="nav">
+      <button onclick="prevCard()">→ السابق</button>
+      <button onclick="nextCard()">التالي ←</button>
+    </div>
+  </div>
+</div>
+
+<!-- SPEAK OUT LOUD -->
+<div class="screen" id="s-speak">
+  <div class="topbar"><button class="btn-back" onclick="goHome()">→ رجوع</button><span class="counter" id="speak-count"></span></div>
+  <div class="panel">
+    <div class="speak-word">
+      <div class="w heb" id="sp-he"></div>
+      <div class="m" id="sp-ar"></div>
+    </div>
+    <button class="hear-he wide-btn" onclick="speakHe(spList[spIdx].heSpeak)">🔊 اسمع أولاً</button>
+    <button class="mic" id="mic" onclick="startListen()">🎤</button>
+    <div class="feedback" id="sp-fb">اضغط على الميكروفون وقُل الكلمة بالعبرية</div>
+    <button class="manual" onclick="speakCorrect()">✅ قلتُها صح — التالي</button>
+  </div>
+</div>
+
+<!-- MATCH -->
+<div class="screen" id="s-match">
+  <div class="topbar"><button class="btn-back" onclick="goHome()">→ رجوع</button><span class="counter" id="match-count"></span></div>
+  <div class="panel">
+    <p style="text-align:center;font-weight:800;color:var(--ink2);margin:0 0 14px;">وصّل كل كلمة عبرية بمعناها العربي</p>
+    <div class="match-grid">
+      <div class="match-col" id="col-he"></div>
+      <div class="match-col" id="col-ar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="s-quiz">
+  <div class="topbar"><button class="btn-back" onclick="goHome()">→ رجوع</button><span class="counter" id="quiz-count"></span></div>
+  <div class="panel">
+    <div class="q-word heb" id="q-he"></div>
+    <button class="hear-he wide-btn" onclick="speakHe(curQuiz.heSpeak)">🔊 اسمع</button>
+    <div class="q-ask">ما معنى هذه الكلمة؟</div>
+    <div class="opts" id="q-opts"></div>
+  </div>
+</div>
+
+<!-- WIN -->
+<div class="screen" id="s-win">
+  <div class="panel win">
+    <div class="emo" id="win-emo">🎉</div>
+    <h2 id="win-title">أحسنت يا عثمان!</h2>
+    <p id="win-sub" style="color:var(--ink2);font-weight:700;"></p>
+    <button onclick="goHome()">🏠 العودة للقائمة</button>
+  </div>
+</div>
+
+<script>
+/* ============ DATA ============ */
+const CMD = [
+  {he:"בַּחֲרוּ", heSpeak:"בחרו", ar:"إِخْتَارُوا", arSpeak:"اختاروا"},
+  {he:"כִּתְבוּ", heSpeak:"כתבו", ar:"أكتبوا", arSpeak:"اكتبوا"},
+  {he:"הִסְתַּכְּלוּ", heSpeak:"הסתכלו", ar:"انظروا", arSpeak:"انظروا"},
+  {he:"הוֹסִיפוּ", heSpeak:"הוסיפו", ar:"أضيفوا", arSpeak:"أضيفوا"},
+  {he:"קְרָא", heSpeak:"קרא", ar:"اقرأ", arSpeak:"اقرأ"},
+  {he:"הַקְשִׁיבוּ", heSpeak:"הקשיבו", ar:"اصغوا", arSpeak:"اصغوا"},
+  {he:"מִצְאוּ", heSpeak:"מצאו", ar:"جدوا", arSpeak:"جدوا"},
+  {he:"הַקִּיפוּ", heSpeak:"הקיפו", ar:"حوّطوا", arSpeak:"حوطوا"},
+  {he:"מתחו קו", heSpeak:"מתחו קו", ar:"مدوا خط", arSpeak:"مدوا خط"},
+  {he:"צַיְּרוּ", heSpeak:"ציירו", ar:"ارسموا", arSpeak:"ارسموا"},
+  {he:"תַּרְגְּמוּ", heSpeak:"תרגמו", ar:"ترجموا", arSpeak:"ترجموا"},
+  {he:"הַשְׁלִימוּ", heSpeak:"השלימו", ar:"أكملوا", arSpeak:"أكملوا"},
+  {he:"התאימו", heSpeak:"התאימו", ar:"لائموا", arSpeak:"لائموا"},
+  {he:"הַעְתִּיקוּ", heSpeak:"העתיקו", ar:"إِنْسَخُوا", arSpeak:"انسخوا"},
+];
+const Q = [
+  {he:"אֵיךְ / כֵּיצַד", heSpeak:"איך", ar:"كَيفَ", arSpeak:"كيف"},
+  {he:"מָה", heSpeak:"מה", ar:"مَاذَا / مَا", arSpeak:"ماذا"},
+  {he:"לָמָּה / מַדּוּעַ", heSpeak:"למה", ar:"لِمَاذَا", arSpeak:"لماذا"},
+  {he:"אֵיפֹה", heSpeak:"איפה", ar:"أَينَ", arSpeak:"أين"},
+  {he:"מָתַי", heSpeak:"מתי", ar:"متى", arSpeak:"متى"},
+  {he:"אֵיזֶה / אֵילוּ", heSpeak:"איזה", ar:"أَيّ / أَيّة", arSpeak:"أي"},
+  {he:"לְאָן", heSpeak:"לאן", ar:"إِلَى أَيْنَ", arSpeak:"إلى أين"},
+  {he:"כַּמָּה", heSpeak:"כמה", ar:"كَمْ", arSpeak:"كم"},
+  {he:"מִי", heSpeak:"מי", ar:"مَن", arSpeak:"من"},
+  {he:"האם", heSpeak:"האם", ar:"هل", arSpeak:"هل"},
+];
+let category = "all";
+function deck(){ return category==="cmd"?CMD : category==="q"?Q : CMD.concat(Q); }
+
+/* ============ SCORE ============ */
+let score = 0;
+function addScore(n){ score+=n; document.getElementById('score').textContent=score; }
+
+/* ============ SPEECH (text-to-speech) ============ */
+let voices=[];
+function loadVoices(){ voices = window.speechSynthesis ? speechSynthesis.getVoices() : []; }
+if(window.speechSynthesis){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+function pickVoice(langPrefix){
+  return voices.find(v=>v.lang.toLowerCase().startsWith(langPrefix)) || null;
+}
+function say(text, langPrefix, fallbackLang){
+  if(!window.speechSynthesis){ return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  const v = pickVoice(langPrefix);
+  if(v) u.voice=v; u.lang = v? v.lang : fallbackLang;
+  u.rate=0.85; u.pitch=1;
+  speechSynthesis.speak(u);
+}
+function speakHe(t){ say(t, "he", "he-IL"); }
+function speakAr(t){ say(t, "ar", "ar-SA"); }
+
+/* ============ NAV ============ */
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById('home').style.display='none';
+  document.getElementById(id).classList.add('on'); window.scrollTo(0,0); }
+function goHome(){ try{speechSynthesis.cancel();}catch(e){} try{stopRec();}catch(e){}
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById('home').style.display='block'; window.scrollTo(0,0); }
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+  c.classList.add('on'); category=c.dataset.cat;
+});
+
+/* ============ FLASHCARDS ============ */
+let fIdx=0, fList=[];
+function startFlash(){ fList=deck().slice(); fIdx=0; show('s-flash'); renderFlash(); }
+function cur(){ return fList[fIdx]; }
+function renderFlash(){
+  document.getElementById('flip').classList.remove('flipped');
+  document.getElementById('fc-he').textContent=cur().he;
+  document.getElementById('fc-ar').textContent=cur().ar;
+  document.getElementById('flash-count').textContent=(fIdx+1)+" / "+fList.length;
+  setTimeout(()=>speakHe(cur().heSpeak), 250);
+}
+function flipCard(){ const f=document.getElementById('flip'); f.classList.toggle('flipped');
+  if(f.classList.contains('flipped')) speakAr(cur().arSpeak); }
+function nextCard(){ if(fIdx<fList.length-1){ fIdx++; renderFlash(); } else { winScreen("🌟","أنهيت كل البطاقات!","راجعها مرة أخرى حتى تحفظها كلها 💪"); } }
+function prevCard(){ if(fIdx>0){ fIdx--; renderFlash(); } }
+
+/* ============ SPEAK OUT LOUD (speech recognition) ============ */
+let spIdx=0, spList=[], rec=null, listening=false;
+function startSpeak(){ spList=shuffle(deck().slice()); spIdx=0; show('s-speak'); renderSpeak(); }
+function renderSpeak(){
+  document.getElementById('sp-he').textContent=spList[spIdx].he;
+  document.getElementById('sp-ar').textContent=spList[spIdx].ar;
+  document.getElementById('speak-count').textContent=(spIdx+1)+" / "+spList.length;
+  document.getElementById('sp-fb').className="feedback";
+  document.getElementById('sp-fb').textContent="اضغط 🎤 وقُل الكلمة بالعبرية";
+  setTimeout(()=>speakHe(spList[spIdx].heSpeak),300);
+}
+function stripNikud(s){ return s.replace(/[\u0591-\u05C7]/g,'').replace(/[^\u05D0-\u05EA ]/g,'').trim(); }
+function startListen(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const fb=document.getElementById('sp-fb');
+  if(!SR){ fb.className="feedback"; fb.textContent="المتصفح لا يدعم الميكروفون — استعمل زر ✅ بعد أن تقولها"; return; }
+  rec = new SR(); rec.lang="he-IL"; rec.interimResults=false; rec.maxAlternatives=5;
+  listening=true; document.getElementById('mic').classList.add('listening');
+  fb.className="feedback"; fb.textContent="🎧 أستمع... قُلها الآن!";
+  rec.onresult=(e)=>{
+    const target=stripNikud(spList[spIdx].heSpeak);
+    let hit=false;
+    for(let i=0;i<e.results[0].length;i++){
+      const said=stripNikud(e.results[0][i].transcript);
+      if(said.includes(target)||target.includes(said)||said===target){ hit=true; break; }
+    }
+    if(hit){ speakCorrect(); }
+    else { fb.className="feedback no"; fb.textContent="❌ قريب! اسمعها مرة أخرى وأعد المحاولة"; speakHe(spList[spIdx].heSpeak); }
+  };
+  rec.onerror=()=>{ fb.className="feedback"; fb.textContent="لم أسمع جيداً — حاول مرة أخرى أو اضغط ✅"; stopRec(); };
+  rec.onend=()=>stopRec();
+  try{ rec.start(); }catch(e){}
+}
+function stopRec(){ listening=false; document.getElementById('mic').classList.remove('listening'); if(rec){ try{rec.stop();}catch(e){} } }
+function speakCorrect(){
+  stopRec();
+  const fb=document.getElementById('sp-fb'); fb.className="feedback ok"; fb.textContent="✅ أحسنت! نطق صحيح 🎉";
+  addScore(10); confetti();
+  setTimeout(()=>{ if(spIdx<spList.length-1){ spIdx++; renderSpeak(); } else { winScreen("🏅","بطل النطق!","قلت كل الكلمات بصوت عالٍ 👏"); } }, 1100);
+}
+
+/* ============ MATCH ============ */
+let mSel=null, mLeft=[], mDone=0, mTotal=0;
+function startMatch(){
+  const pool=shuffle(deck().slice()).slice(0,6);
+  mTotal=pool.length; mDone=0; mSel=null;
+  const hes=shuffle(pool.slice()), ars=shuffle(pool.slice());
+  const colHe=document.getElementById('col-he'), colAr=document.getElementById('col-ar');
+  colHe.innerHTML=""; colAr.innerHTML="";
+  hes.forEach(w=>{ const b=document.createElement('button'); b.className="tile he heb"; b.textContent=w.he;
+    b.dataset.key=w.heSpeak; b.onclick=()=>pickTile(b,'he'); b.onmouseup=()=>speakHe(w.heSpeak); colHe.appendChild(b); });
+  ars.forEach(w=>{ const b=document.createElement('button'); b.className="tile ar"; b.textContent=w.ar;
+    b.dataset.key=w.heSpeak; b.onclick=()=>pickTile(b,'ar'); colAr.appendChild(b); });
+  document.getElementById('match-count').textContent="0 / "+mTotal;
+  show('s-match');
+}
+function pickTile(el,side){
+  if(el.classList.contains('done'))return;
+  if(side==='he') speakHe(el.dataset.key);
+  if(!mSel){ clearSel(); mSel={el,side}; el.classList.add('sel'); return; }
+  if(mSel.side===side){ clearSel(); mSel={el,side}; el.classList.add('sel'); return; }
+  if(mSel.el.dataset.key===el.dataset.key){
+    mSel.el.classList.add('done'); el.classList.add('done'); mSel.el.classList.remove('sel');
+    mDone++; addScore(5); document.getElementById('match-count').textContent=mDone+" / "+mTotal;
+    mSel=null;
+    if(mDone===mTotal){ confetti(); setTimeout(()=>winScreen("🧠","ذاكرة قوية!","طابقت كل الكلمات بنجاح 🎯"),700); }
+  } else {
+    el.classList.add('wrong'); const bad=mSel.el; setTimeout(()=>{el.classList.remove('wrong'); bad.classList.remove('sel');},400); mSel=null;
+  }
+}
+function clearSel(){ document.querySelectorAll('.tile.sel').forEach(t=>t.classList.remove('sel')); }
+
+/* ============ QUIZ ============ */
+let qList=[], qIdx=0, curQuiz=null;
+function startQuiz(){ qList=shuffle(deck().slice()); qIdx=0; show('s-quiz'); renderQuiz(); }
+function renderQuiz(){
+  curQuiz=qList[qIdx];
+  document.getElementById('q-he').textContent=curQuiz.he;
+  document.getElementById('quiz-count').textContent=(qIdx+1)+" / "+qList.length;
+  const pool=deck().filter(w=>w.ar!==curQuiz.ar);
+  const opts=shuffle([curQuiz, ...shuffle(pool).slice(0,3)]);
+  const box=document.getElementById('q-opts'); box.innerHTML="";
+  opts.forEach(w=>{ const b=document.createElement('button'); b.className="opt"; b.textContent=w.ar;
+    b.onclick=()=>answerQuiz(b,w); box.appendChild(b); });
+  setTimeout(()=>speakHe(curQuiz.heSpeak),300);
+}
+function answerQuiz(btn,w){
+  document.querySelectorAll('.opt').forEach(o=>o.onclick=null);
+  if(w.ar===curQuiz.ar){ btn.classList.add('right'); addScore(10); confetti(); speakAr(curQuiz.arSpeak); }
+  else { btn.classList.add('wrong');
+    document.querySelectorAll('.opt').forEach(o=>{ if(o.textContent===curQuiz.ar) o.classList.add('right'); });
+    speakAr(curQuiz.arSpeak);
+  }
+  setTimeout(()=>{ if(qIdx<qList.length-1){ qIdx++; renderQuiz(); } else { winScreen("🏆","انتهى الاختبار!","راجع ما أخطأت فيه وأعد اللعب 🚀"); } }, 1400);
+}
+
+/* ============ WIN ============ */
+function winScreen(emo,title,sub){ confetti();
+  document.getElementById('win-emo').textContent=emo;
+  document.getElementById('win-title').textContent=title+" يا عثمان!";
+  document.getElementById('win-sub').textContent=sub; show('s-win'); }
+
+/* ============ HELPERS ============ */
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function confetti(){
+  for(let i=0;i<28;i++){ const d=document.createElement('div');
+    d.style.cssText=`position:fixed;top:-10px;left:${Math.random()*100}vw;width:10px;height:10px;z-index:99;
+      background:hsl(${Math.random()*360},90%,60%);border-radius:2px;pointer-events:none;`;
+    document.body.appendChild(d);
+    const dur=900+Math.random()*900;
+    d.animate([{transform:'translateY(0) rotate(0)',opacity:1},{transform:`translateY(100vh) rotate(${720*Math.random()}deg)`,opacity:0}],{duration:dur,easing:'ease-in'});
+    setTimeout(()=>d.remove(),dur);
+  }
+}
+</script>
+</body>
+</html>
